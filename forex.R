@@ -1,31 +1,26 @@
 data <- head(read.csv("EURUSD_hour.csv", colClasses ="character"))
-output <- data.frame(sample = NA, duplicate = NA, matches = NA)
-dfrow <- 1
-ascending = TRUE
-ascending
-for(i in 1:nrow(data)) {
-  i
-  currentRow <- data[i, ]
-  currentRow
-#   for(j in (i+1):nrow(data)) {
-#     nextRow <- data[j,]
-#     delta = as.numeric(nextRow["X.OPEN."]) - as.numeric(currentRow["X.OPEN."])
-#     delta
+
+trendDelta <- 0
+delta <- 0
+output = lapply(1:nrow(data), function(i) {
+  currentRow <- data[i,]
+  if (i > 1) {
+    prevRow <- data[i-1,]
+    delta <- as.numeric(currentRow["X.OPEN."]) - as.numeric(prevRow["X.OPEN."])
     
-#     ifdelta <- delta > 0
-#     if (xor(ascending, ifdelta)) {
-#       ascending = !ascending
-#       delta
-#       break
-#     }    
-#   }
-}
+    print(delta, scientific=FALSE)
+    print(trendDelta, scientific=FALSE)
+    
+    if (trendDelta * delta >= 0) {
+      trendDelta <<- trendDelta + delta
+    } else {
+      trendDelta <<- delta
+    }          
+  }  
+  currentRow["X.DELTA."] <- format(delta, scientific=FALSE)
+  currentRow["X.TREND_DELTA.<- format(trendDelta, scientific=FALSE)
+  currentRow
+})
 
-
-
-# if (delta > 0 & descending) {
-#   output[dfrow, ] <- [currentRow["X.DATE."], currentRow["X.DATE."], j, delta]
-#   dfrow <- dfrow + 1
-#   
-#   break
-# } 
+output = do.call(rbind, output)
+output

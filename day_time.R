@@ -3,9 +3,13 @@ data <- read.csv("EURUSD_hour.csv",
                       col.names = c("cur", "date", "time", "open", "low", "high", "close"))
 data$date <- as.Date(data$date, format="%Y%m%d")
 
+# data <- head(data, 20000)
+
 data$delta <- data$close - data$open
 data$maxDelta <- data$high - data$low
 
-output <- aggregate(maxDelta ~ time, data, mean)
+output <- aggregate(maxDelta ~ format(date, "%Y") + time, data, mean)
+names(output)[1]<-"year"
+output <- xtabs(maxDelta ~ time + year, data = output)
 # output[order(output$maxDelta),]
-output
+write.fwf(output, file = "day_time_output.csv")

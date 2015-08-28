@@ -1,6 +1,6 @@
 require(gdata)
 
-data <- read.csv("EURUSD_hour.csv", 
+data <- read.csv("input/EURUSD_hour.csv", 
                  colClasses =c(rep("character", 3), rep("numeric", 4)), 
                  col.names = c("cur", "date", "time", "open", "low", "high", "close"))
 data$date <- as.Date(data$date, format="%Y%m%d")
@@ -21,4 +21,4 @@ data$class <- ifelse(data$openDelta/data$maxDelta <= 0.25 & data$closeDelta/data
 output <- aggregate(cur ~ format(date, "%Y") + class, data, length)
 names(output)[1]<-"year"
 output <- xtabs(cur ~ class + year, data = output)
-write.fwf(output, file = "hour_output.csv")
+write.fwf(output, file = "output/hour_output.csv")

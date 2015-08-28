@@ -1,6 +1,6 @@
 require(gdata)
 
-data <- read.csv("EURUSD_hour.csv", 
+data <- read.csv("input/EURUSD_hour.csv", 
                  colClasses =c(rep("character", 3), rep("numeric", 4)), 
                  col.names = c("cur", "date", "time", "open", "low", "high", "close"))
 data$date <- as.Date(data$date, format="%Y%m%d")
@@ -42,4 +42,4 @@ output = by(data, 1:nrow(data), function(row) {
 
 output = do.call(rbind, output)
 
-write.fwf(output, file = "trend_output.csv")
+write.fwf(output, file = "output/trend_output.csv")

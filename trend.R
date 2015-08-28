@@ -1,32 +1,31 @@
-data <- head(read.csv("EURUSD_hour.csv", colClasses ="character"),100000)
-firstRow = data[1, ]
-firstRow["DELTA"] <- format(0, scientific=FALSE, nsmall=4)
-firstRow["LONG_DELTA"] <- format(0, scientific=FALSE, nsmall=4) 
-firstRow["TREND"] <- format(0, scientific=FALSE, nsmall=4)
-firstRow["MAX_TREND"] <- format(0, scientific=FALSE, nsmall=4)
+require(gdata)
 
+data <- read.csv("EURUSD_hour.csv", 
+                 colClasses =c(rep("character", 3), rep("numeric", 4)), 
+                 col.names = c("cur", "date", "time", "open", "low", "high", "close"))
+data$date <- as.Date(data$date, format="%Y%m%d")
+
+# data <- head(data, 20)
+
+data$delta <- data$close - data$open
 
 longDelta <- 0
 trend <- 0
 trendMax <- 0
-output = lapply(2:nrow(data), function(i) {
-  currentRow <- data[i,]  
-  prevRow <- data[i-1,]
+output = by(data, 1:nrow(data), function(row) {  
   
-  delta <- as.numeric(currentRow["X.OPEN."]) - as.numeric(prevRow["X.OPEN."])
-  
-  if (longDelta * delta >= 0) {
-    longDelta <<- longDelta + delta      
+  if (longDelta * row$delta >= 0) {
+    longDelta <<- longDelta + row$delta      
   } else {
-    longDelta <<- delta      
+    longDelta <<- row$delta      
   }    
   
-  if (trend * delta >= 0) {
-    trend <<- trend + delta            
+  if (trend * row$delta >= 0) {
+    trend <<- trend + row$delta            
   } else {
-    trend <<- trend + delta
+    trend <<- trend + row$delta
     if ((trendMax - trend) / trendMax > 0.2) {
-      trend <<- delta      
+      trend <<- row$delta      
       trendMax <<- trend
     }      
   }      
@@ -35,13 +34,12 @@ output = lapply(2:nrow(data), function(i) {
     trendMax <<- trend
   }
   
-  currentRow["DELTA"] <- format(delta, scientific=FALSE, nsmall=4,justify = "right", width=7)
-  currentRow["LONG_DELTA"] <- format(longDelta, scientific=FALSE, nsmall=4,justify = "right", width=7) 
-  currentRow["TREND"] <- format(trend, scientific=FALSE, nsmall=4,justify = "right", width=7)
-  currentRow["MAX_TREND"] <- format(trendMax, scientific=FALSE, nsmall=4,justify = "right", width=7)
-  currentRow["MAX_TREND_ABS"] <- format(abs(trendMax), scientific=FALSE, nsmall=4,justify = "right", width=6)
-  currentRow
+  row$longDelta = longDelta
+  row$trend = trend
+  row$trendMax = trendMax  
+  row
 })
 
 output = do.call(rbind, output)
-write.csv(output, file = "EURUSD_hour_output.csv", row.names = FALSE)
+
+write.fwf(output, file = "trend_output.csv")

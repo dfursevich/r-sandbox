@@ -2,6 +2,7 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(scales)
+library(TTR)
 
 data <- read.csv("input/DAT_MT_EURUSD_M1_201508.csv")
 names(data) <- c("date", "time", "open", "low", "high", "close", "xz")

@@ -55,17 +55,21 @@ data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")
 data$time <- NULL 
 
 
-offset <-
+data$eurjpy_delta <- data$eurjpy[length(data$eurjpy)] - data$eurjpy[1:(length(data$eurjpy))]
+data$usdjpy_delta <- data$usdjpy[length(data$usdjpy)] - data$usdjpy[1:(length(data$usdjpy))]
+data$cadjpy_delta <- data$cadjpy[length(data$cadjpy)] - data$cadjpy[1:(length(data$cadjpy))]
+data$nzdjpy_delta <- data$nzdjpy[length(data$nzdjpy)] - data$nzdjpy[1:(length(data$nzdjpy))]
+data$chfjpy_delta <- data$chfjpy[length(data$chfjpy)] - data$chfjpy[1:(length(data$chfjpy))]
+data$audjpy_delta <- data$audjpy[length(data$audjpy)] - data$audjpy[1:(length(data$audjpy))]
+data$gbpjpy_delta <- data$gbpjpy[length(data$gbpjpy)] - data$gbpjpy[1:(length(data$gbpjpy))]
 
-eurjpy_delta <- data$eurjpy[length(data$eurjpy)] - data$eurjpy[1:(length(data$eurjpy) - 1)]
-usdjpy_delta <- data$usdjpy[length(data$usdjpy)] - data$usdjpy[1:(length(data$usdjpy) - 1)]
-cadjpy_delta <- data$cadjpy[length(data$cadjpy)] - data$cadjpy[1:(length(data$cadjpy) - 1)]
-nzdjpy_delta <- data$nzdjpy[length(data$nzdjpy)] - data$nzdjpy[1:(length(data$nzdjpy) - 1)]
-chfjpy_delta <- data$chfjpy[length(data$chfjpy)] - data$chfjpy[1:(length(data$chfjpy) - 1)]
-audjpy_delta <- data$audjpy[length(data$audjpy)] - data$audjpy[1:(length(data$audjpy) - 1)]
-gbpjpy_delta <- data$gbpjpy[length(data$gbpjpy)] - data$gbpjpy[1:(length(data$gbpjpy) - 1)]
-
-
+data$eurjpy_delta_wma <- WMA((data$eurjpy_delta), 10000)
+data$usdjpy_delta_wma <- WMA((data$usdjpy_delta), 10000)
+data$cadjpy_delta_wma <- WMA((data$cadjpy_delta), 10000)
+data$nzdjpy_delta_wma <- WMA((data$nzdjpy_delta), 10000)
+data$chfjpy_delta_wma <- WMA((data$chfjpy_delta), 10000)
+data$audjpy_delta_wma <- WMA((data$audjpy_delta), 10000)
+data$gbpjpy_delta_wma <- WMA((data$gbpjpy_delta), 10000)
 
 tail(WMA((eurjpy_delta), length(eurjpy_delta)), 1)
 tail(WMA((usdjpy_delta), length(usdjpy_delta)), 1)
@@ -78,7 +82,7 @@ tail(WMA((gbpjpy_delta), length(gbpjpy_delta)), 1)
 data$total <- data$eurjpy + data$usdjpy + data$cadjpy + data$nzdjpy + data$chfjpy + data$chfjpy + data$gbpjpy
 
 g1 <- (ggplot(data) 
-       + geom_line(aes(date, eurjpy), colour = "red")         
+       + geom_line(aes(date, eurjpy_delta), colour = "red")         
        + scale_x_datetime(breaks = date_breaks("15 min"), labels = date_format("%H:%M"))
        + theme(axis.text.x=element_blank(),
                axis.title.x=element_blank(),
@@ -86,7 +90,7 @@ g1 <- (ggplot(data)
                axis.ticks.x=element_blank())) 
 
 g2 <- (ggplot(data)        
-       + geom_line(aes(date, gbpjpy), colour = "green") 
+       + geom_line(aes(date, eurjpy_delta_wma), colour = "green") 
        + scale_x_datetime(breaks = date_breaks("15 min"), labels = date_format("%H:%M"))
        + theme(axis.text.x=element_blank(),
                axis.title.x=element_blank(),

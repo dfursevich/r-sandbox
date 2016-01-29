@@ -4,6 +4,9 @@ library(gridExtra)
 library(scales)
 library(TTR)
 
+# goal is to find currency which is changing more/less than others at the moment and test 
+# this gipotesy for this pair.
+
 eurusd_full <- read.csv("input/DAT_MT_EURUSD_M1_201508.csv", header=FALSE)
 usdjpy_full <- read.csv("input/DAT_MT_USDJPY_M1_201508.csv", header=FALSE)
 eurjpy_full <- read.csv("input/DAT_MT_EURJPY_M1_201508.csv", header=FALSE)
@@ -54,8 +57,9 @@ data <- merge(data, gbpjpy, by=c("date","time"))
 data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")
 data$time <- NULL 
 
+delta <- 10000
 
-data$eurjpy_delta <- data$eurjpy[length(data$eurjpy)] - data$eurjpy[1:(length(data$eurjpy))]
+data$eurjpy_delta <- data$eurjpy - data$eurjpy[1:(length(data$eurjpy))]
 data$usdjpy_delta <- data$usdjpy[length(data$usdjpy)] - data$usdjpy[1:(length(data$usdjpy))]
 data$cadjpy_delta <- data$cadjpy[length(data$cadjpy)] - data$cadjpy[1:(length(data$cadjpy))]
 data$nzdjpy_delta <- data$nzdjpy[length(data$nzdjpy)] - data$nzdjpy[1:(length(data$nzdjpy))]
@@ -71,15 +75,9 @@ data$chfjpy_delta_wma <- WMA((data$chfjpy_delta), 10000)
 data$audjpy_delta_wma <- WMA((data$audjpy_delta), 10000)
 data$gbpjpy_delta_wma <- WMA((data$gbpjpy_delta), 10000)
 
-tail(WMA((eurjpy_delta), length(eurjpy_delta)), 1)
-tail(WMA((usdjpy_delta), length(usdjpy_delta)), 1)
-tail(WMA((cadjpy_delta), length(cadjpy_delta)), 1)
-tail(WMA((nzdjpy_delta), length(nzdjpy_delta)), 1)
-tail(WMA((chfjpy_delta), length(chfjpy_delta)), 1)
-tail(WMA((audjpy_delta), length(audjpy_delta)), 1)
-tail(WMA((gbpjpy_delta), length(gbpjpy_delta)), 1)
 
-data$total <- data$eurjpy + data$usdjpy + data$cadjpy + data$nzdjpy + data$chfjpy + data$chfjpy + data$gbpjpy
+
+
 
 g1 <- (ggplot(data) 
        + geom_line(aes(date, eurjpy_delta), colour = "red")         

@@ -57,27 +57,40 @@ data <- merge(data, gbpjpy, by=c("date","time"))
 data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")
 data$time <- NULL 
 
-delta <- 10000
+offset <- 10000
+length <- length(data)
 
-data$eurjpy_delta <- data$eurjpy - data$eurjpy[1:(length(data$eurjpy))]
-data$usdjpy_delta <- data$usdjpy[length(data$usdjpy)] - data$usdjpy[1:(length(data$usdjpy))]
-data$cadjpy_delta <- data$cadjpy[length(data$cadjpy)] - data$cadjpy[1:(length(data$cadjpy))]
-data$nzdjpy_delta <- data$nzdjpy[length(data$nzdjpy)] - data$nzdjpy[1:(length(data$nzdjpy))]
-data$chfjpy_delta <- data$chfjpy[length(data$chfjpy)] - data$chfjpy[1:(length(data$chfjpy))]
-data$audjpy_delta <- data$audjpy[length(data$audjpy)] - data$audjpy[1:(length(data$audjpy))]
-data$gbpjpy_delta <- data$gbpjpy[length(data$gbpjpy)] - data$gbpjpy[1:(length(data$gbpjpy))]
+data$eurjpy_delta <- append(diff(data$eurjpy, offset), rep(NA, offset), after = 0) 
+data$usdjpy_delta <- append(diff(data$usdjpy, offset), rep(NA, offset), after = 0) 
+data$cadjpy_delta <- append(diff(data$cadjpy, offset), rep(NA, offset), after = 0) 
+data$nzdjpy_delta <- append(diff(data$nzdjpy, offset), rep(NA, offset), after = 0) 
+data$chfjpy_delta <- append(diff(data$chfjpy, offset), rep(NA, offset), after = 0) 
+data$audjpy_delta <- append(diff(data$audjpy, offset), rep(NA, offset), after = 0) 
+data$gbpjpy_delta <- append(diff(data$gbpjpy, offset), rep(NA, offset), after = 0) 
 
-data$eurjpy_delta_wma <- WMA((data$eurjpy_delta), 10000)
-data$usdjpy_delta_wma <- WMA((data$usdjpy_delta), 10000)
-data$cadjpy_delta_wma <- WMA((data$cadjpy_delta), 10000)
-data$nzdjpy_delta_wma <- WMA((data$nzdjpy_delta), 10000)
-data$chfjpy_delta_wma <- WMA((data$chfjpy_delta), 10000)
-data$audjpy_delta_wma <- WMA((data$audjpy_delta), 10000)
-data$gbpjpy_delta_wma <- WMA((data$gbpjpy_delta), 10000)
+delta <- data[, date] 
 
+data$eurjpy_delta_wma <- WMA((data$eurjpy_delta), offset)
+data$usdjpy_delta_wma <- WMA((data$usdjpy_delta), offset)
+data$cadjpy_delta_wma <- WMA((data$cadjpy_delta), offset)
+data$nzdjpy_delta_wma <- WMA((data$nzdjpy_delta), offset)
+data$chfjpy_delta_wma <- WMA((data$chfjpy_delta), offset)
+data$audjpy_delta_wma <- WMA((data$audjpy_delta), offset)
+data$gbpjpy_delta_wma <- WMA((data$gbpjpy_delta), offset)
 
+names <- names(data)
+start_column_index <- 16
 
-
+t(apply(head(data), 1, function(row) {
+  row <- row[start_column_index:(start_column_index + 6)]  
+  min_val <- min(row)
+  min_cur <- names[which.min(row) + start_column_index - 1]
+  
+  max_val <- max(row)
+  max_cur <- names[which.max(row) + start_column_index - 1]
+  
+  c(min_val, min_cur, max_val, max_cur)
+}))
 
 g1 <- (ggplot(data) 
        + geom_line(aes(date, eurjpy_delta), colour = "red")         

@@ -15,6 +15,7 @@ nzdjpy_full <- read.csv("input/DAT_MT_NZDJPY_M1_201508.csv", header=FALSE)
 chfjpy_full <- read.csv("input/DAT_MT_CHFJPY_M1_201508.csv", header=FALSE)
 audjpy_full <- read.csv("input/DAT_MT_AUDJPY_M1_201508.csv", header=FALSE)
 gbpjpy_full <- read.csv("input/DAT_MT_GBPJPY_M1_201508.csv", header=FALSE)
+gbpchf_full <- read.csv("input/DAT_MT_GBPCHF_M1_201508.csv", header=FALSE)
 
 start_row = 0
 
@@ -25,6 +26,7 @@ nzdjpy <- nzdjpy_full[, c(1,2,6)]
 chfjpy <- chfjpy_full[, c(1,2,6)]
 audjpy <- audjpy_full[, c(1,2,6)]
 gbpjpy <- gbpjpy_full[, c(1,2,6)]
+gbpchf <- gbpchf_full[, c(1,2,6)]
 
 # eurjpy <- eurjpy_full[start_row:(start_row + 1440), c(1,2,6)]
 # usdjpy <- usdjpy_full[start_row:(start_row + 1440), c(1,2,6)]
@@ -41,6 +43,7 @@ names(nzdjpy) <- c("date", "time", "nzdjpy")
 names(chfjpy) <- c("date", "time", "chfjpy")
 names(audjpy) <- c("date", "time", "audjpy")
 names(gbpjpy) <- c("date", "time", "gbpjpy")
+names(gbpchf) <- c("date", "time", "gbpchf")
 
 # eurjpy$date <- strptime(paste(eurjpy$date, eurjpy$time), "%Y.%m.%d %H:%M")
 # usdjpy$date <- strptime(paste(usdjpy$date, usdjpy$time), "%Y.%m.%d %H:%M")
@@ -54,6 +57,7 @@ data <- merge(data, nzdjpy, by=c("date","time"))
 data <- merge(data, chfjpy, by=c("date","time"))
 data <- merge(data, audjpy, by=c("date","time"))
 data <- merge(data, gbpjpy, by=c("date","time"))
+data <- merge(data, gbpchf, by=c("date","time"))
 data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")
 data$time <- NULL 
 
@@ -86,6 +90,46 @@ f <- function(..., func, names) {
 
 data$min_cur = f(data$eurjpy_delta_wma, data$usdjpy_delta_wma, data$cadjpy_delta_wma, data$nzdjpy_delta_wma, data$chfjpy_delta_wma, data$audjpy_delta_wma, data$gbpjpy_delta_wma, func = min, names = names)
 data$max_cur = f(data$eurjpy_delta_wma, data$usdjpy_delta_wma, data$cadjpy_delta_wma, data$nzdjpy_delta_wma, data$chfjpy_delta_wma, data$audjpy_delta_wma, data$gbpjpy_delta_wma, func = max, names = names)
+
+
+test_data <- head(data,10)
+
+timediff <- function(..., lag_mins) {
+  df <- cbind(...)
+  apply(df, 1, function(x) {
+    class(x[1])
+#     lag_date <- x[1] + (60 * lag_mins)
+#     lag_x <- df[data[1] == lag_date,]
+#     lag_diff <- x[2] - lag_x[2]
+#     lag_diff
+  })
+}
+
+timediff(test_data$date, test_data$gbpchf, lag_mins = 1)
+
+
+
+intervals <- c(1024) 
+
+for(int in intervals) {
+  data[paste0("m", int)] = numeric(nrow(data))
+  
+  data2 <- lapply(1:nrow(data), function(i) {
+    row = data[i, ]      
+    
+    dataInt = data[ifelse(i > int, i - int, 0) : (i - 1), ]  
+    rowInt = dataInt[difftime(row$date, dataInt$date, units = "min") == int, ]    
+    row[paste0("m", int)] = ifelse(nrow(rowInt) == 1, row$gbpchf - rowInt$gbpchf, NA)       
+    
+    row
+  })  
+  
+  data2 <- do.call(rbind, data2)  
+}
+
+data_gbpchf <- subset(data2, min_cur == 'gbp' & max_cur == 'chf', select=c("date", "gbpjpy_delta_wma", "chfjpy_delta", "gbpchf", "m1024"))
+
+
 
 aggregate(eurjpy ~ min_cur + max_cur, data = data, FUN = length)
 

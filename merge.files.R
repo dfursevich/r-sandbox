@@ -1,3 +1,5 @@
+# returns data frame in the following format 
+# |currency 1 close value|currency 2 close value|...|
 merge.files <- function(input.dir, file.pattern) {
   files <- list.files(input.dir, pattern = file.pattern)
   
@@ -11,8 +13,9 @@ merge.files <- function(input.dir, file.pattern) {
   
   data <- Reduce(function(x, y) merge(x, y, by=c("date", "time")), files.data, accumulate=F)  
   
-  data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")      
+#   data$date <- strptime(paste(data$date, data$time), "%Y.%m.%d %H:%M")      
+  data$date <- NULL  
   data$time <- NULL
-  
+    
   data
 }

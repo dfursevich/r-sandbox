@@ -1,9 +1,11 @@
 data <- merge.files("./input/", "DAT_MT_([^_]+).+201508\\.csv")
 
+test.data <- generate.test.data(data, c(2))
+
 signals <- generate.signals(data)
 
-test.intervals <- c(5)
+test.signals <- test.signals(data, test.data, signals)
 
-test.data < generate.test.data(data, test.intervals)
+
 
 

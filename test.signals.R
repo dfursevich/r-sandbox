@@ -1,17 +1,23 @@
-test.signals <- function(data, signals, test.intervals, test.data) {
-  lapply(1:nrow(signals), 1, function(row_index) {
+test.signals <- function(data, signals, test.intervals, test.data, lot) {
+  list <- lapply(1:nrow(signals), function(row_index) {
     signal <- signals[row_index, ]
-#     lapply(test.intervals, function(test.interval) {
-#         
-#     })
     
-    test.value <- test.data[row_index, paste(signal$currency, 2, sep = "")] 
-    
+    data.value <- data[row_index, paste(signal$currency, '', sep='')]
+    sapply(test.intervals, function(interval) {
+      test.data.value <- test.data[row_index, paste(signal$currency, interval, sep = ".")] 
+      
+      (data.value - test.data.value) * lot * sign(signal$signal)
+    })
   })
+  
+  result.df <- do.call(rbind.data.frame, list)
+  names(result.df) <- test.intervals
+  result.df
 }
 
 test.signals.data <- data.frame(eurjpy = c(1,3,6,10,15,21,28,36,45,55))
-test.signals.test.data <- data.frame(eurjpy.2 = c(-5,-7,-9,-11,-13,-15,-17,-19,NA,NA))
+test.signals.test.data <- data.frame(eurjpy.2 = c(6,10,15,21,28,36,45,55,NA,NA), eurjpy.5 = c(21,28,36,45,55,NA,NA,NA,NA,NA))
 test.signals.signals <- data.frame(signal = c(0,1,2,3,4,5,6,7,8,9), currency=rep('eurjpy', 10))
-test.signals.test.intervals <- c(2)
-test.signals(test.signals.data, test.signals.test.data, test.signals.test.intervals, test.signals.signals)
+test.signals.test.intervals <- c(2,5)
+test.signals.lot <- 10
+test.signals(test.signals.data, test.signals.signals, test.signals.test.intervals, test.signals.test.data, test.signals.lot)

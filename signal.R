@@ -1,11 +1,15 @@
 data <- merge.files("./input/", "DAT_MT_([^_]+).+201508\\.csv")
 
-test.data <- generate.test.data(data, c(2))
+# data <- head(data, 1000)
+
+test.intervals <- c(2,5)
+
+test.data <- generate.test.data(data, test.intervals)
 
 signals <- generate.signals(data)
 
-test.signals <- test.signals(data, test.data, signals)
+test.results <- test.signals(data, signals, test.intervals, test.data, 10000)
 
-
-
-
+lapply(test.results, function(interval.results) {
+  sum(interval.results, na.rm = TRUE)
+})

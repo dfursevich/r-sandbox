@@ -1,15 +1,15 @@
 data <- merge.files("./input/", "DAT_MT_([^_]+).+201508\\.csv")
 
-# data <- head(data, 1000)
+draw.currency.macd.plot(data[1:200,], 'eurjpy', TRUE)
 
-test.intervals <- c(2,5)
+test.intervals <- seq(3, 30, 3)
 
 test.data <- generate.test.data(data, test.intervals)
 
 signals <- generate.signals(data)
 
-test.results <- test.signals(data, signals, test.intervals, test.data, 10000)
+test.results <- test.signals(data, signals, test.intervals, test.data, 1)
 
-lapply(test.results, function(interval.results) {
+sapply(test.results, function(interval.results) {
   sum(interval.results, na.rm = TRUE)
 })

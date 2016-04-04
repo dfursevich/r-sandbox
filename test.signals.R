@@ -6,7 +6,7 @@ test.signals <- function(data, signals, test.intervals, test.data, lot) {
     sapply(test.intervals, function(interval) {
       test.data.value <- test.data[row_index, paste(signal$currency, interval, sep = ".")] 
       
-      (data.value - test.data.value) * lot * sign(signal$signal)
+      (test.data.value - data.value) * lot * sign(signal$signal)
     })
   })
   

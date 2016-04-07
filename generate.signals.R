@@ -1,13 +1,13 @@
 library(TTR)
 
 generate.signals <- function(data, interval = NULL) {
-  macd.eur <- as.data.frame(MACD(data$eurjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.usd <- as.data.frame(MACD(data$usdjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.cad <- as.data.frame(MACD(data$cadjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.nzd <- as.data.frame(MACD(data$nzdjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.chf <- as.data.frame(MACD(data$chfjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.aud <- as.data.frame(MACD(data$audjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
-  macd.gbp <- as.data.frame(MACD(data$gbpjpy, 12, 26, 9, maType="EMA", percent=FALSE)) 
+  macd.eur <- as.data.frame(MACD(data$eurjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.usd <- as.data.frame(MACD(data$usdjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.cad <- as.data.frame(MACD(data$cadjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.nzd <- as.data.frame(MACD(data$nzdjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.chf <- as.data.frame(MACD(data$chfjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.aud <- as.data.frame(MACD(data$audjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
+  macd.gbp <- as.data.frame(MACD(data$gbpjpy, 12, 26, 9, maType="EMA", percent=TRUE)) 
   
   cur.names <- c("eur", "usd", "cad", "nzd", "chf", "aud", "gbp")
   cur.pairs <- c("audcad", "audchf", "audjpy", "audnzd", "audusd", "cadchf", "cadjpy", "chfjpy",

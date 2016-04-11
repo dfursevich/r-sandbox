@@ -38,8 +38,6 @@ generate.signals <- function(data, interval = NULL) {
   })
   
   signals <- do.call(rbind.data.frame, signals.list) 
-#   names(signals) <- c("signal", "currency")
-#   signals$signal <- as.numeric(signals$signal)
   signals
 }
 

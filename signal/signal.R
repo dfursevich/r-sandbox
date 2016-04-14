@@ -1,3 +1,10 @@
+source("./functions/merge.files.R")
+source("./functions/draw.currency.macd.plot.R")
+source("./functions/generate.test.data.R")
+source("./functions/test.signals.R")
+
+source("./signal/generate.signals.v2.R")
+
 data <- merge.files("./input/", "DAT_MT_([^_]+).+201508\\.csv")
 
 draw.currency.macd.plot(data, 'gbpnzd', FALSE)

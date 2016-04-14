@@ -14,7 +14,7 @@ generate.signals.v2 <- function(data, interval = NULL) {
 #     signal.value <- ifelse(is.na(macd$eurjpy) || is.na(macd$usdjpy) || is.na(macd$eurusd), NA, 
 #                            ifelse(macd$eurjpy > 0 && macd$usdjpy > 0 && macd$eurusd < 0 && (macd$eurjpy > macd$usdjpy), -1 * macd$eurusd, NA))
     
-    signal.value <- ifelse(macd$eurjpy >= 0.02, -1 * macd$eurjpy, NA)s
+    signal.value <- ifelse(macd$eurjpy >= 0.02, -1 * macd$eurjpy, NA)
     
     list(signal = signal.value, currency = ifelse(is.na(signal.value), NA, 'eurjpy'))
   })

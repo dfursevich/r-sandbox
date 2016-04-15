@@ -1,29 +1,26 @@
-test.indicator <- function(data, test.intervals, test.data, lot = 1000) {
-  if (length(data) == 1){
-    list <- lapply(1:nrow(data), function(row_index) {
-      signal <- signals[row_index, ]
-      
-      data.value <- data[row_index, paste(signal$currency, '', sep='')]
-      sapply(test.intervals, function(interval) {
-        test.data.value <- test.data[row_index, paste(signal$currency, interval, sep = ".")] 
-        ifelse(is.null(data.value), NA, (test.data.value - data.value) * lot * sign(signal$signal))      
-      })
+test.indicators <- function(indicators, data, test.data, test.intervals, lot = 1000) {
+  lapply(test.intervals, function(interval) {  
+    interval.result.matrix <- sapply(seq_along(indicators), function(col_index) {
+      currency.name <- names(indicators[col_index])
+      currency.indicators <- indicators[, col_index]
+      currency.data <- data[, currency.name]
+      currency.test.data <- test.data[, paste(currency.name, interval, sep = ".")]
+      ifelse(is.na(currency.indicators), NA, (currency.test.data - currency.data) * lot * sign(currency.indicators))      
     })
     
-    result.df <- do.call(rbind.data.frame, list)
-    names(result.df) <- test.intervals
-    result.df  
-  } else {
-    
-  }  
-  
-  lapply(data, function(coll){
-    
+    interval.result.df <- as.data.frame(interval.result.matrix);
+    interval.result.names <- lapply(names(indicators), function(indicator.name) {
+      paste(indicator.name, interval, sep = ".")
+    })    
+    names(interval.result.df) <- interval.result.names
+    interval.result.df
   })
 }
 
-test.indicator.data <- data.frame(eurjpy = c(1,3,6,10,15,21,28,36,45,55))
-test.indicator.test.data <- data.frame(eurjpy.2 = c(6,10,15,21,28,36,45,55,NA,NA), eurjpy.5 = c(21,28,36,45,55,NA,NA,NA,NA,NA))
-test.indicator.test.intervals <- c(2,5)
-test.indicator.lot <- 10
-test.indicator(test.signals.data, test.signals.signals, test.signals.test.intervals, test.signals.test.data, test.signals.lot)
+test.indicators.indicators <- data.frame(eurjpy = c(0,NA,1,1,1,-1,-1,-1,-1,-1), usdjpy = c(0,NA,1,1,1,-1,-1,-1,-1,-1))
+test.indicators.data <- data.frame(eurjpy = c(1,3,6,10,15,21,28,36,45,55), usdjpy = c(1,3,6,10,15,21,28,36,45,55))
+test.indicators.test.data <- data.frame(eurjpy.2 = c(6,10,15,21,28,36,45,55,NA,NA), eurjpy.5 = c(21,28,36,45,55,NA,NA,NA,NA,NA), usdjpy.2 = c(6,10,15,21,28,36,45,55,NA,NA), usdjpy.5 = c(21,28,36,45,55,NA,NA,NA,NA,NA))
+test.indicators.test.intervals <- c(2,5)
+test.indicators.lot <- 1
+test.indicators.result <- test.indicators(test.indicators.indicators, test.indicators.data, test.indicators.test.data, test.indicators.test.intervals, test.indicators.lot)
+do.call(cbind.data.frame, test.indicators.result)

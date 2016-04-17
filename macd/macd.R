@@ -21,11 +21,29 @@ sapply(eurjpy.test.results, function(interval.results) {
 
 percentile <- ceiling((ecdf(macd.data$eurjpy)(macd.data$eurjpy))*10)/10
 
+# total income/loss
 aggregate(. ~ percentile, data = cbind(percentile, eurjpy.test.results), FUN = sum)
 
+# total success/failure deals income/loss
+aggregate(. ~ percentile, data = cbind(percentile, eurjpy.test.results), FUN = function(x) {sum(x[!is.na(x) & x < 0])})
+
+# total percent of succesful deals
 aggregate(. ~ percentile, data = cbind(percentile, eurjpy.test.results), FUN = function(x) {
   x <- x[!is.na(x) & x != 0]
   round(length(x[x > 0])/length(x), 2) * 100
 })
 
-aggregate(. ~ percentile, data = cbind(percentile, macd.data), FUN = function(x){round(mean(x),digits=4)})
+analyse.data <- cbind(percentile, macd.data, eurjpy.test.results['eurjpy.30'])
+analyse.data <- analyse.data[analyse.data['eurjpy.30'] > 0, ]
+# percentile <- ceiling((ecdf(analyse.data$eurjpy)(analyse.data$eurjpy))*10)/10
+aggregate(. ~ percentile, data = cbind(analyse.data), FUN = function(x){round(mean(x),digits=4)})
+
+analyse.data <- cbind(percentile, macd.data, eurjpy.test.results['eurjpy.30'])
+analyse.data <- analyse.data[analyse.data['eurjpy.30'] < 0, ]
+# percentile <- ceiling((ecdf(analyse.data$eurjpy)(analyse.data$eurjpy))*10)/10
+aggregate(. ~ percentile, data = cbind(analyse.data), FUN = function(x){round(mean(x),digits=4)})
+
+
+
+
+

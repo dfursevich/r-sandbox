@@ -7,7 +7,7 @@ source("./signal/generate.signals.v2.R")
 
 data <- merge.files("./input/", "DAT_MT_([^_]+).+201508\\.csv")
 
-draw.currency.macd.plot(data, 'gbpnzd', FALSE)
+draw.currency.macd.plot(data$eurjpy[1:200], TRUE)
 
 test.intervals <- seq(5, 50, 5)
 

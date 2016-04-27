@@ -4,11 +4,20 @@ library(gridExtra)
 library(scales)
 library(TTR)
 
-draw.currency.macd.plot <- function(data, currency, macd = TRUE) {    
-  plot.data <- data.frame(currency = data[, currency])    
-  plot.data$idx <- 1:nrow(plot.data)
+draw.currency.macd.plot <- function(currency, macd = TRUE) {    
+  macd.data <- as.data.frame(MACD(currency, 12, 26, 9))
+  plot.data <- data.frame(
+    currency = currency,
+    slow = EMA(currency, 26),
+    fast = EMA(currency, 12),
+    macd = macd.data$macd,
+    signal = macd.data$signal,
+    idx = 1:length(currency)
+  )
   
   g1 <- (ggplot(plot.data) 
+         + geom_line(aes(idx, slow), colour = "green") 
+         + geom_line(aes(idx, fast), colour = "blue") 
          + geom_line(aes(idx, currency))           
          + theme(axis.text.x=element_blank(),
                  axis.title.x=element_blank(),
@@ -31,5 +40,4 @@ draw.currency.macd.plot <- function(data, currency, macd = TRUE) {
 }
 
 draw.currency.macd.plot.data <- data.frame(eurjpy = cumsum(1:200))
-draw.currency.macd.plot.currency = "eurjpy"
-draw.currency.macd.plot(draw.currency.macd.plot.data, draw.currency.macd.plot.currency)
+draw.currency.macd.plot(draw.currency.macd.plot.data$eurjpy)

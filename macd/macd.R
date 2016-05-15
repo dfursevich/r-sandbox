@@ -8,13 +8,13 @@ data <- merge.files("./input/", "DAT_MT_(EURJPY).+201508\\.csv")
 macd.data <- as.data.frame(
   sapply(data, function(cur.pair) {
     macd <- MACD(cur.pair, 12, 26, 9)
-    macd[,1] - macd[,2]
+    macd[,1]
   }))
 
 test.intervals <- seq(5, 50, 5)
 test.data <- generate.test.data(data, test.intervals)
 
-eurjpy.test.results <- do.call(cbind.data.frame, test.indicators(macd.data['eurjpy'], data, test.data, test.intervals))
+eurjpy.test.results <- do.call(cbind.data.frame, test.indicators(macd.data['eurjpy'], data, test.data, test.intervals, lot=1))
 
 sapply(eurjpy.test.results, function(interval.results) {
   sum(interval.results, na.rm = TRUE)

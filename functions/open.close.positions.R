@@ -20,17 +20,21 @@ open.close.positions <- function(indicators, data, test.data, test.indicators, s
       for (i in 1:length(currency.test.data.values)) {
         test.value <- currency.test.data.values[i]
         indicator.value <- currency.test.indicator.values[i]
-        if (is.na(test.value)) {
+        if (is.na(test.value) || is.na(indicator.value)) {
           next
         }
         if (sign * (test.value - best.test.value) > 0) {
           if (sign * (test.value - currency.value) >= take.profit) {
+            return(sign * (test.value - currency.value))
+          } else if ((sign * indicator.value) > 0) {
             return(sign * (test.value - currency.value))
           } else {
             best.test.value <- test.value  
           }
         } else {
           if (sign * (best.test.value - test.value) >= stop.loss) {
+            return(sign * (test.value - currency.value))
+          } else if ((sign * indicator.value) < 0) {
             return(sign * (test.value - currency.value))
           }
         }

@@ -1,7 +1,10 @@
+# install.packages("scatterplot3d", repos="http://R-Forge.R-project.org")
 library(TTR)
+library(scatterplot3d)
 source("./functions/merge.files.R")
 source("./functions/generate.test.data.R")
 source("./functions/open.close.positions.R")
+source("./functions/test.function.R")
 
 data <- merge.files("./input/", "DAT_MT_(EURJPY).+201508\\.csv")
 
@@ -20,8 +23,21 @@ signal.data <- as.data.frame(
   }))
 test.macd.data <- generate.test.data(signal.data, test.intervals, flat = FALSE)
 
-eurjpy.test.results <- do.call(cbind.data.frame, open.close.positions(macd.data['eurjpy'], data, test.data, test.macd.data, 0.06, 0.12))
+func <- function(stop.loss, take.profit) {
+  eurjpy.test.results <- do.call(cbind.data.frame, open.close.positions(macd.data['eurjpy'], data, test.data, test.macd.data, stop.loss, take.profit))
+  
+  sapply(eurjpy.test.results, function(interval.results) {
+    sum(interval.results, na.rm = TRUE)
+  })
+}
 
-sapply(eurjpy.test.results, function(interval.results) {
-  sum(interval.results, na.rm = TRUE)
-})
+result.grid <- test.function(func, stop.loss = seq(0, 0.15, 0.01), take.profit = seq(0, 0.15, 0.01))
+
+scatterplot3d(result.grid$stop.loss,result.grid$take.profit, result.grid$result)
+
+# test.function(func, stop.loss = c(0.03), take.profit = c(0.01))
+
+
+
+
+

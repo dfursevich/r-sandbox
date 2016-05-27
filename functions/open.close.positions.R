@@ -26,7 +26,7 @@ open.close.positions <- function(indicators, data, test.data, test.indicators, s
         if (sign * (test.value - best.test.value) > 0) {
           if (sign * (test.value - currency.value) >= take.profit) {
             return(sign * (test.value - currency.value))
-          } else if ((sign * indicator.value) > 0) {
+          } else if ((sign * indicator.value) < 0) {
             return(sign * (test.value - currency.value))
           } else {
             best.test.value <- test.value  
@@ -34,7 +34,7 @@ open.close.positions <- function(indicators, data, test.data, test.indicators, s
         } else {
           if (sign * (best.test.value - test.value) >= stop.loss) {
             return(sign * (test.value - currency.value))
-          } else if ((sign * indicator.value) < 0) {
+          } else if ((sign * indicator.value) > 0) {
             return(sign * (test.value - currency.value))
           }
         }

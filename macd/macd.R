@@ -8,7 +8,7 @@ data <- merge.files("./input/", "DAT_MT_(EURJPY).+201508\\.csv")
 macd.data <- as.data.frame(
   sapply(data, function(cur.pair) {
     macd <- MACD(cur.pair, 12, 26, 9)
-    macd[,1]
+    ifelse(abs(macd[,1]) > 0.018, (-1) * macd[,1], NA)
   }))
 
 test.intervals <- seq(5, 50, 5)

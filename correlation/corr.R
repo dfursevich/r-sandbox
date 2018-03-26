@@ -13,7 +13,14 @@ merge.files <- function(input.dir, file.pattern) {
   data
 }
 
+cor.shift <- function(x, y, shift) {
+  unlist(lapply(1:shift, function(i) {
+    cor(x[i:length(x)], y[1:(length(y) - i + 1)])
+  }))
+}
+
 data <- merge.files("./", "(.*)\\.csv")
 
 cor(data[, 2: ncol(data)])
 
+cor.shift(data[, 3], data[, 4], 40)
